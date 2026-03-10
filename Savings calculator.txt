@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Savings Calculator</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #ffb3de, #c9a0ff, #a0c4ff, #b3ffda, #fff0a0);
+    background-size: 300% 300%;
+    animation: unicorn 6s ease infinite;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+
+  @keyframes unicorn {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  .card {
+    background: white;
+    border-radius: 16px;
+    padding: 32px;
+    max-width: 420px;
+    width: 100%;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+  }
+
+  h1 {
+    text-align: center;
+    color: #333;
+    font-size: 1.5rem;
+    margin-bottom: 6px;
+  }
+
+  .subtitle {
+    text-align: center;
+    color: #888;
+    font-size: 0.85rem;
+    margin-bottom: 24px;
+  }
+
+  .field { margin-bottom: 16px; }
+
+  label {
+    display: block;
+    font-size: 0.85rem;
+    color: #555;
+    margin-bottom: 6px;
+    font-weight: bold;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"] {
+    width: 100%;
+    padding: 10px 14px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1rem;
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+  }
+
+  input:focus { border-color: #c9a0ff; }
+
+  input[type="range"] {
+    width: 100%;
+    padding: 0;
+    border: none;
+    accent-color: #c9a0ff;
+    cursor: pointer;
+  }
+
+  .range-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: #888;
+    margin-top: 4px;
+  }
+
+  .range-val { color: #c9a0ff; font-weight: bold; }
+
+  button {
+    width: 100%;
+    padding: 12px;
+    background: #c9a0ff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: background 0.2s;
+  }
+
+  button:hover { background: #b080f5; }
+
+  .msg {
+    font-size: 0.8rem;
+    text-align: center;
+    margin-top: 10px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    display: none;
+  }
+  .msg.error   { background: #fff0f0; color: #d00; display: block; }
+  .msg.success { background: #f0fff4; color: #080; display: block; }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 18px 0;
+    color: #ccc;
+    font-size: 0.8rem;
+  }
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #eee;
+  }
+
+  .link-text {
+    text-align: center;
+    font-size: 0.82rem;
+    color: #888;
+    margin-top: 16px;
+  }
+  .link-text a {
+    color: #c9a0ff;
+    cursor: pointer;
+    font-weight: bold;
+    text-decoration: none;
+  }
+  .link-text a:hover { text-decoration: underline; }
+
+  .result {
+    margin-top: 24px;
+    background: #fdf0ff;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    display: none;
+  }
+  .result.show { display: block; }
+
+  .result-main {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #c9a0ff;
+    margin-bottom: 4px;
+  }
+
+  .result-label {
+    font-size: 0.8rem;
+    color: #888;
+    margin-bottom: 16px;
+  }
+
+  .result-details {
+    display: flex;
+    justify-content: space-around;
+    border-top: 1px solid #eee;
+    padding-top: 14px;
+  }
+
+  .detail-item { text-align: center; }
+
+  .detail-value {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #333;
+  }
+
+  .detail-label {
+    font-size: 0.72rem;
+    color: #aaa;
+    margin-top: 2px;
+  }
+
+  .welcome-banner {
+    background: linear-gradient(135deg, #fdf0ff, #f0f4ff);
+    border-radius: 10px;
+    padding: 10px 16px;
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  .welcome-banner strong { color: #c9a0ff; }
+</style>
+</head>
+<body>
+
+<!-- REGISTER PAGE -->
+<div class="card" id="registerPage">
+  <h1>🦄 Create Account</h1>
+  <p class="subtitle">Sign up to start saving smarter</p>
+
+  <div class="field">
+    <label>Full Name</label>
+    <input type="text" id="reg-name" placeholder="Enter your full name">
+  </div>
+  <div class="field">
+    <label>Email</label>
+    <input type="email" id="reg-email" placeholder="Enter your email">
+  </div>
+  <div class="field">
+    <label>Username</label>
+    <input type="text" id="reg-username" placeholder="Choose a username">
+  </div>
+  <div class="field">
+    <label>Password</label>
+    <input type="password" id="reg-password" placeholder="Choose a password (min 4 chars)">
+  </div>
+  <div class="field">
+    <label>Confirm Password</label>
+    <input type="password" id="reg-confirm" placeholder="Repeat your password">
+  </div>
+
+  <button onclick="register()">Create Account</button>
+  <div class="msg" id="reg-msg"></div>
+
+  <div class="divider">or</div>
+  <div class="link-text">Already have an account? <a onclick="showPage('loginPage')">Login here</a></div>
+</div>
+
+<!-- LOGIN PAGE -->
+<div class="card" id="loginPage" style="display:none">
+  <h1>👋 Welcome Back!</h1>
+  <p class="subtitle">Login to your savings account</p>
+
+  <div class="field">
+    <label>Username</label>
+    <input type="text" id="log-username" placeholder="Enter your username">
+  </div>
+  <div class="field">
+    <label>Password</label>
+    <input type="password" id="log-password" placeholder="Enter your password">
+  </div>
+
+  <button onclick="login()">Login</button>
+  <div class="msg" id="log-msg"></div>
+
+  <div class="divider">or</div>
+  <div class="link-text">Don't have an account? <a onclick="showPage('registerPage')">Register here</a></div>
+</div>
+
+<!-- CALCULATOR PAGE -->
+<div class="card" id="calcPage" style="display:none">
+  <h1>💰 Savings Calculator</h1>
+  <div class="welcome-banner">Hello, <strong id="welcomeName">User</strong>! 👋 Let's grow your savings.</div>
+
+  <div class="field">
+    <label>Starting Amount (₹)</label>
+    <input type="number" id="principal" value="10000" min="0">
+  </div>
+  <div class="field">
+    <label>Monthly Deposit (₹)</label>
+    <input type="number" id="monthly" value="2000" min="0">
+  </div>
+  <div class="field">
+    <label>Interest Rate — <span class="range-val" id="rateVal">5%</span></label>
+    <input type="range" id="rate" min="1" max="20" value="5" step="0.5">
+    <div class="range-row"><span>1%</span><span>20%</span></div>
+  </div>
+  <div class="field">
+    <label>Years — <span class="range-val" id="yearsVal">10 years</span></label>
+    <input type="range" id="years" min="1" max="40" value="10">
+    <div class="range-row"><span>1 yr</span><span>40 yrs</span></div>
+  </div>
+
+  <button onclick="calculate()">Calculate</button>
+
+  <div class="result" id="result">
+    <div class="result-main" id="total">₹0</div>
+    <div class="result-label">Total Savings</div>
+    <div class="result-details">
+      <div class="detail-item">
+        <div class="detail-value" id="contributed">₹0</div>
+        <div class="detail-label">You Put In</div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-value" id="interest">₹0</div>
+        <div class="detail-label">Interest Earned</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="link-text" style="margin-top:20px">
+    <a onclick="logout()">← Logout</a>
+  </div>
+</div>
+
+<script>
+  const users = {};
+
+  function showPage(id) {
+    ['registerPage', 'loginPage', 'calcPage'].forEach(p => {
+      document.getElementById(p).style.display = (p === id) ? 'block' : 'none';
+    });
+  }
+
+  function showMsg(id, text, type) {
+    const el = document.getElementById(id);
+    el.textContent = text;
+    el.className = 'msg ' + type;
+  }
+
+  function register() {
+    const name     = document.getElementById('reg-name').value.trim();
+    const email    = document.getElementById('reg-email').value.trim();
+    const username = document.getElementById('reg-username').value.trim();
+    const password = document.getElementById('reg-password').value.trim();
+    const confirm  = document.getElementById('reg-confirm').value.trim();
+
+    if (!name || !email || !username || !password || !confirm) {
+      showMsg('reg-msg', '⚠️ Please fill in all fields!', 'error'); return;
+    }
+    if (!email.includes('@') || !email.includes('.')) {
+      showMsg('reg-msg', '⚠️ Please enter a valid email!', 'error'); return;
+    }
+    if (password.length < 4) {
+      showMsg('reg-msg', '⚠️ Password must be at least 4 characters!', 'error'); return;
+    }
+    if (password !== confirm) {
+      showMsg('reg-msg', '❌ Passwords do not match!', 'error'); return;
+    }
+    if (users[username]) {
+      showMsg('reg-msg', '❌ Username already taken!', 'error'); return;
+    }
+
+    users[username] = { name, email, password };
+    showMsg('reg-msg', '✅ Account created! Taking you to login...', 'success');
+
+    setTimeout(() => {
+      document.getElementById('log-username').value = username;
+      document.getElementById('log-password').value = '';
+      ['reg-name','reg-email','reg-username','reg-password','reg-confirm'].forEach(i => document.getElementById(i).value = '');
+      document.getElementById('reg-msg').className = 'msg';
+      showPage('loginPage');
+    }, 1500);
+  }
+
+  function login() {
+    const username = document.getElementById('log-username').value.trim();
+    const password = document.getElementById('log-password').value.trim();
+
+    if (!username || !password) {
+      showMsg('log-msg', '⚠️ Please enter username and password!', 'error'); return;
+    }
+    if (!users[username] || users[username].password !== password) {
+      showMsg('log-msg', '❌ Incorrect username or password!', 'error'); return;
+    }
+
+    document.getElementById('welcomeName').textContent = users[username].name;
+    document.getElementById('log-msg').className = 'msg';
+    showPage('calcPage');
+    calculate();
+  }
+
+  function logout() {
+    document.getElementById('log-username').value = '';
+    document.getElementById('log-password').value = '';
+    document.getElementById('log-msg').className = 'msg';
+    showPage('loginPage');
+  }
+
+  document.getElementById('rate').addEventListener('input', function() {
+    document.getElementById('rateVal').textContent = this.value + '%';
+  });
+  document.getElementById('years').addEventListener('input', function() {
+    document.getElementById('yearsVal').textContent = this.value + ' years';
+  });
+
+  function fmt(n) {
+    return '₹' + Math.round(n).toLocaleString('en-IN');
+  }
+
+  function calculate() {
+    const P   = parseFloat(document.getElementById('principal').value) || 0;
+    const pmt = parseFloat(document.getElementById('monthly').value) || 0;
+    const r   = parseFloat(document.getElementById('rate').value) / 100 / 12;
+    const n   = parseInt(document.getElementById('years').value) * 12;
+
+    const fvP   = P * Math.pow(1 + r, n);
+    const fvPMT = r > 0 ? pmt * ((Math.pow(1 + r, n) - 1) / r) : pmt * n;
+    const total       = fvP + fvPMT;
+    const contributed = P + pmt * n;
+    const interest    = total - contributed;
+
+    document.getElementById('total').textContent       = fmt(total);
+    document.getElementById('contributed').textContent = fmt(contributed);
+    document.getElementById('interest').textContent    = fmt(interest);
+    document.getElementById('result').classList.add('show');
+  }
+
+  document.getElementById('log-password').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
+  document.getElementById('reg-confirm').addEventListener('keydown',  e => { if (e.key === 'Enter') register(); });
+</script>
+
+</body>
+</html>
